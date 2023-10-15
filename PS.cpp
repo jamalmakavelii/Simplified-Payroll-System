@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Employee {
+public:
+    Employee(string name, int id, double salaryRate)
+        : name(name), id(id), salaryRate(salaryRate) {}
+
+    virtual double calculatePay() const = 0;
+    virtual void displayInfo() const {
+        cout << "ID: " << id << "\tName: " << name << "\tSalary Rate: $" << salaryRate << endl;
+    }
+
+protected:
+    string name;
+    int id;
+    double salaryRate;
+};
+
+class FixedSalaryEmployee : public Employee {
+public:
+    FixedSalaryEmployee(string name, int id, double salaryRate)
+        : Employee(name, id, salaryRate) {}
+
+    double calculatePay() const override {
+        return salaryRate;
+    }
+};
+
+class HourlyPaidEmployee : public Employee {
+public:
+    HourlyPaidEmployee(string name, int id, double hourlyRate, int hoursWorked)
+        : Employee(name, id, hourlyRate), hoursWorked(hoursWorked) {}
+
+    double calculatePay() const override {
+        return salaryRate * hoursWorked;
+    }
+
+    void displayInfo() const override {
+        Employee::displayInfo();
+        cout << "Hours Worked: " << hoursWorked << endl;
+    }
+
+private:
+    int hoursWorked;
+};
+
+int main() {
+    vector<Employee*> employees;
+
+    employees.push_back(new FixedSalaryEmployee("John Doe", 1, 4000.0));
+    employees.push_back(new HourlyPaidEmployee("Jane Smith", 2, 15.0, 160));
+
+    cout << "Payroll Information:" << endl;
+    for (const Employee* emp : employees) {
+        emp->displayInfo();
+        cout << "Monthly Pay: $" << emp->calculatePay() << endl;
+        cout << "-------------------------" << endl;
+    }
+
+    // Clean up allocated memory
+    for (Employee* emp : employees) {
+        delete emp;
+    }
+
+    return 0;
+}
